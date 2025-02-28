@@ -19,3 +19,16 @@ body {
   background: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+button {
+  border: 2px inset var(--background);
+  background: var(--foreground);
+  color: var(--background);
+  padding: 0 1rem 0 1rem; ;
+}
+
+input {
+  border: 2px inset var(--background);
+  background: var(--foreground);
+  color: var(--background);
+}
