@@ -18,7 +18,7 @@ export default function Home() {
           {birthday && <p>Your selected birthday is: {birthday}</p>}
         </div>
       </div>
-     
+      <NumerologyOutput fullName={fullName} birthday={birthday}/>
     </div>
   );
 }
@@ -56,6 +56,9 @@ function BirthdayInput({ birthday, setBirthday}) {
 function NameInput({ fullName, setfullName}) {
 
   function handleClick(fullNameElement: HTMLInputElement) {
+    if (!fullNameElement || fullNameElement.value === "") {
+        return;
+    } 
     setfullName(fullNameElement.value);
   };
 
@@ -75,3 +78,16 @@ function NameInput({ fullName, setfullName}) {
     </div>
   );
 }
+
+function NumerologyOutput({ fullName, birthday }) {
+  function handleNumerology(fName: string, bday: string) {
+    console.log(fName, bday);
+  }
+  
+  return (
+    <div className="flex flex-col items-center gap-8">
+      <button onClick={() => handleNumerology(fullName, birthday)}>Calculate</button>
+    </div>
+  );
+}
+
