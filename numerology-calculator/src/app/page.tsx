@@ -8,19 +8,24 @@ export default function Home() {
   const [numerology, setNumerology] = useState({ll: 0, op: 0, sn: 0, pod: 0});
   
   return (
-      <div className="flex flex-col items-center gap-8 p-8">
-      <h1 className="text-4xl font-bold text-center">Numerology Calculator</h1>
-      <Directions/>
-      <div className="flex flex-col items-center gap-8">
-        <div className="flex flex-col items-center gap-4">
-          <NameInput fullName={fullName} setfullName={setfullName}/>
-          {fullName && <p>Your selected name is: {fullName}</p>}
-          <BirthdayInput birthday={birthday} setBirthday={setBirthday}/>
-          {birthday && <p>Your selected birthday is: {birthday}</p>}
+    <div id="home" className="flex flex-row items-center justify-center gap-8 p-8">
+      <div id="left-panel" className="flex flex-col items-center gap-8 p-8">
+        <h1 className="text-4xl font-bold text-center">Numerology Calculator</h1>
+        <Directions/>
+        <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center gap-4">
+            <NameInput fullName={fullName} setfullName={setfullName}/>
+            {fullName && <p>Your name is: {fullName}</p>}
+            <BirthdayInput birthday={birthday} setBirthday={setBirthday}/>
+            {birthday && <p>Your selected birthday is: {birthday}</p>}
+          </div>
         </div>
       </div>
-      <NumerologyOutput fullName={fullName} birthday={birthday} numerology={numerology} setNumerology={setNumerology} />
+      <div id="right-panel" className="flex flex-col justify-center items-start gap-8">
+        <NumerologyOutput fullName={fullName} birthday={birthday} numerology={numerology} setNumerology={setNumerology}/>
+      </div>
     </div>
+    
   );
 }
 
@@ -123,7 +128,7 @@ function NumerologyOutput({ fullName, birthday, numerology, setNumerology }) {
   return (
     <div className="flex flex-col items-center gap-8">
       <button onClick={() => handleNumerology(fullName, birthday)}>Calculate</button>
-      {numerology.ll !== 0? <h3>Life Lesson: {numerology.ll}</h3>: <h3>Life Lesson: </h3>}
+      {numerology.ll !== 0? <h3>Life Lesson: {numerology.ll}</h3> : <h3>Life Lesson: </h3>}
       {numerology.op !== 0? <h3>OuterPersonality: {numerology.op}</h3>: <h3>OuterPersonality: </h3>}
       {numerology.sn !== 0? <h3>Soul Number: {numerology.sn}</h3>: <h3>Soul Number: </h3>}
       {numerology.pod !== 0? <h3>Path Of Destiny: {numerology.pod}</h3>: <h3>Path Of Destiny: </h3>}

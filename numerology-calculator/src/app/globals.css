@@ -32,3 +32,20 @@ input {
   background: var(--foreground);
   color: var(--background);
 }
+
+#home {
+  width: auto;
+  height: 100vh;
+}
+
+#left-panel {
+  width: 50%;
+  height: 100%;
+  float: left;
+}
+
+#right-panel {
+  width: 50%;
+  height: 100%;
+  float: right;
+}
