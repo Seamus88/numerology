@@ -3,26 +3,25 @@ import { useState } from "react";
 
 
 export default function Home() {
-  const [fullName, setfullName] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [numerology, setNumerology] = useState({ll: 0, op: 0, sn: 0, pod: 0});
+  const [numerologyData, setNumerologyData] = useState({birthName: "", dob: "", ll: 0, op: 0, sn: 0, pod: 0});
+
   
   return (
-    <div id="home" className="flex flex-row items-center justify-center gap-8 p-8">
-      <div id="left-panel" className="flex flex-col items-center gap-8 p-8">
+    <div id="home" className="flex flex-col justify-center gap-8 p-8 w-full h-full">
+      <div id="header" className="text-2xl font-bold text-center">
         <h1 className="text-4xl font-bold text-center">Numerology Calculator</h1>
-        <Directions/>
-        <div className="flex flex-col items-center gap-8">
+      </div>
+      <div id="panels" className="flex flex-row flex-wrap justify-center gap-8 items-center">
+        <div id="left-panel" className="flex flex-col  gap-8 p-8">
+          <Directions/>
           <div className="flex flex-col items-center gap-4">
-            <NameInput fullName={fullName} setfullName={setfullName}/>
-            {fullName && <p>Your name is: {fullName}</p>}
-            <BirthdayInput birthday={birthday} setBirthday={setBirthday}/>
-            {birthday && <p>Your selected birthday is: {birthday}</p>}
+            <NameInput setNumerologyData={setNumerologyData}/>
+            <BirthdayInput setNumerologyData={setNumerologyData}/>
           </div>
         </div>
-      </div>
-      <div id="right-panel" className="flex flex-col justify-center items-start gap-8">
-        <NumerologyOutput fullName={fullName} birthday={birthday} numerology={numerology} setNumerology={setNumerology}/>
+        <div id="right-panel" className="flex flex-col justify-center items-start gap-8">
+          <NumerologyOutput numerologyData={numerologyData} />
+        </div>
       </div>
     </div>
     
@@ -31,9 +30,9 @@ export default function Home() {
 
 function Directions() {
   return (
-    <div className="flex flex-col items-center gap-8">
+    <div className="flex flex-col items-center gap-8 ">
       <p>Please Input your Birthday and full name.</p>
-      <p>For your name you have two options when finding your numerology numbers:</p>
+      <p>For your name you have two options when finding your numerologyData numbers:</p>
       <ul>
         <li>1. Use the full name you were given at birth.</li>
         <li>2. Use the full name you prefer to go by (nicknames etc).</li>
@@ -43,7 +42,22 @@ function Directions() {
   )
 }
 
-function BirthdayInput({ birthday, setBirthday}) {
+function BirthdayInput({setNumerologyData}) {
+  function calculateLifeLesson(bday: string) {
+    let bdayArray = bday.split("-");
+    let year = bdayArray[0].split("");
+    let yearSum = 0;
+    year.forEach((num) => yearSum += parseInt(num));
+    console.log(yearSum);
+    let month = parseInt(bdayArray[1]);
+    let day = parseInt(bdayArray[2]);
+    setNumerologyData((prevState) => ({
+      ll: yearSum + month + day, op: prevState.op, sn: prevState.sn, pod: prevState.pod
+    }))
+
+  }
+
+
   return (
     <div className="flex flex-col items-center gap-4">
       <label htmlFor="birthday">Birthday</label>
@@ -52,30 +66,44 @@ function BirthdayInput({ birthday, setBirthday}) {
         id="birthday"
         name="birthday"
         className="p-2 border border-gray-300 rounded-md"
-        value={birthday}
-        onChange={(e) => setBirthday(e.target.value)}
+        onChange={(e) => setNumerologyData((prevState) => ({
+          birthName: prevState.birthName, 
+          dob: e.target.value,
+          ll: calculateLifeLesson(e.target.value),
+          op: prevState.op,
+          sn: prevState.sn,
+          pod: prevState.pod
+        }))}
       />     
     </div>
   );
 }
 
-function NameInput({setfullName}) {
+function NameInput({setNumerologyData} ) {
 
   function handleClick() {
-    let fullNameElement = document.getElementById("fullname") as HTMLInputElement;
-    if (!fullNameElement || fullNameElement.value === "") {
+    const birthNameElement = document.getElementById("birthName") as HTMLInputElement;
+    if (!birthNameElement || birthNameElement.value === "") {
         return;
-    } 
-    setfullName(fullNameElement.value);
+    } else {
+      setNumerologyData((prevState) => ({
+        birthName: birthNameElement.value, 
+        dob: prevState.dob,
+        ll: prevState.ll,
+        op: prevState.op,
+        sn: prevState.sn,
+        pod: prevState.pod
+      }));
+    }
   };
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <label htmlFor="fullName">Full Name</label>
+      <label htmlFor="birthName">Full Name</label>
       <input 
         type="text" 
-        id="fullname" 
-        name="fullname"
+        id="birthName" 
+        name="birthName"
         className="p-2 border border-gray-300"
         defaultValue=""
       />
@@ -86,27 +114,14 @@ function NameInput({setfullName}) {
   );
 }
 
-function NumerologyOutput({ fullName, birthday, numerology, setNumerology }) {
+function NumerologyOutput({numerologyData}) {
   const lettersValue = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6, "g": 7, "h": 8, "i": 9, "j": 1, "k": 2, "l": 3, "m": 4, "n": 5, "o": 6, "p": 7, "q": 8, "r": 9, "s": 1, "t": 2, "u": 3, "v": 4, "w": 5, "x": 6, "y": 7, "z": 8};
   
-  function handleNumerology(fName: string, bDay: string) {
-    calculateNameValue(fName);
-    calculateLifeLesson(bDay); 
+  function handleNumerology(fName: string) {
+    calculateNameValue(fName);; 
   }
   
-  function calculateLifeLesson(bday: string) {
-    let bdayArray = bday.split("-");
-    let year = bdayArray[0].split("");
-    let yearSum = 0;
-    year.forEach((num) => yearSum += parseInt(num));
-    console.log(yearSum);
-    let month = parseInt(bdayArray[1]);
-    let day = parseInt(bdayArray[2]);
-    setNumerology((prevState) => ({
-      ll: yearSum + month + day, op: prevState.op, sn: prevState.sn, pod: prevState.pod
-    }))
-
-  }
+  
 
   function calculateNameValue(fName: string) {
     let outerPersonality = 0;
@@ -120,18 +135,18 @@ function NumerologyOutput({ fullName, birthday, numerology, setNumerology }) {
         outerPersonality += lettersValue[letter];
       } 
     };
-    setNumerology((prevState) => ({
+    setNumerologyData((prevState) => ({
       ll: prevState.ll, op: outerPersonality, sn: soulNumber, pod: soulNumber + outerPersonality}));  
   }
 
   
   return (
     <div className="flex flex-col items-center gap-8">
-      <button onClick={() => handleNumerology(fullName, birthday)}>Calculate</button>
-      {numerology.ll !== 0? <h3>Life Lesson: {numerology.ll}</h3> : <h3>Life Lesson: </h3>}
-      {numerology.op !== 0? <h3>OuterPersonality: {numerology.op}</h3>: <h3>OuterPersonality: </h3>}
-      {numerology.sn !== 0? <h3>Soul Number: {numerology.sn}</h3>: <h3>Soul Number: </h3>}
-      {numerology.pod !== 0? <h3>Path Of Destiny: {numerology.pod}</h3>: <h3>Path Of Destiny: </h3>}
+      <button onClick={() => handleNumerology(numerologyData.birthName, numerologyData.birthday)}>Calculate</button>
+      {numerologyData.ll !== 0? <h3>Life Lesson: {numerologyData.ll}</h3> : <h3>Life Lesson: </h3>}
+      {numerologyData.op !== 0? <h3>OuterPersonality: {numerologyData.op}</h3>: <h3>OuterPersonality: </h3>}
+      {numerologyData.sn !== 0? <h3>Soul Number: {numerologyData.sn}</h3>: <h3>Soul Number: </h3>}
+      {numerologyData.pod !== 0? <h3>Path Of Destiny: {numerologyData.pod}</h3>: <h3>Path Of Destiny: </h3>}
     </div>
   );
 }
