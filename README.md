@@ -1,2 +1,0 @@
-# numerology
-Numerology Calculator
