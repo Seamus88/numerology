@@ -11,14 +11,24 @@ export default function Home() {
     pod: string;
   }
 
+  interface nameOutput {
+    show: boolean;
+    letterWithValue: Array<{ letter: string; value: number; }>;
+  }
 
-
+  const [nameOutput, setNameOutput] = useState<nameOutput>({show: false, letterWithValue: []});
   const [numerologyData, setNumerologyData] = useState<NumerologyData>({birthName: "", dob: "", ll: '', op: '', sn: '', pod: '',});
   const lettersValue = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6, "g": 7, "h": 8, "i": 9, "j": 1, "k": 2, "l": 3, "m": 4, "n": 5, "o": 6, "p": 7, "q": 8, "r": 9, "s": 1, "t": 2, "u": 3, "v": 4, "w": 5, "x": 6, "y": 7, "z": 8};
   
+  function clearNumerologyData() {
+    setNameOutput({show: false, letterWithValue: []});
+    setNumerologyData({birthName: "", dob: "", ll: '', op: '', sn: '', pod: '',});
+  }
+
   function handleNumerology() {
     const birthName = document.getElementById("birthName") as HTMLInputElement;
-    calculateNameValue(birthName.value); 
+    clearNumerologyData();
+    calculateNameValue(birthName.value, setNameOutput); 
   }
 
   function baseNumber(num: number) {
@@ -32,7 +42,7 @@ export default function Home() {
     return newNum;
   }
 
-  function calculateNameValue(birthName: string) {
+  function calculateNameValue(birthName: string, setNameOutput) {
     let outerPersonality = 0;
     let soulNumber = 0;
     let pod = 0;
@@ -43,13 +53,24 @@ export default function Home() {
       const letter = nName[i];
       if (letter == "a" || letter == "e" || letter == "i" || letter == "o" || letter == "u") {
         soulNumber += lettersValue[letter];
+        setNameOutput((prevState) => ({
+          show: prevState.show, 
+          letterWithValue: [...prevState.letterWithValue, { letter: letter, value: lettersValue[letter]}]
+        }))
       } else if (letter == "b" || letter == "c" || letter == "d" || letter == "f" || letter == "g" || letter == "h" || letter == "j" || letter == "k" || letter == "l" || letter == "m" || letter == "n" || letter == "p" || letter == "q" || letter == "r" || letter == "s" || letter == "t" || letter == "v" || letter == "w" || letter == "x" || letter == "y" || letter == "z") {
         outerPersonality += lettersValue[letter];
+        setNameOutput((prevState) => ({
+          show: prevState.show, 
+          letterWithValue: [...prevState.letterWithValue, { letter: letter, value: lettersValue[letter]}]
+        }))
       }
-    };
+    }
     
     pod = outerPersonality + soulNumber;
-    
+    setNameOutput((prevState) => ({
+      show: true,
+      letterWithValue: [...prevState.letterWithValue]
+    }));
 
     setNumerologyData((prevState) => ({
       birthName: prevState.birthName, 
@@ -80,7 +101,7 @@ export default function Home() {
       </div>
       <div id="main-output" className="flex flex-row justify-center items-center gap-8">
         <div> 
-          <Output />
+          {nameOutput.show == true? <Output nameOutput={nameOutput} setNameOutput={setNameOutput} /> : <div className="hidden"></div>}
         </div>
       </div>
     </div>
@@ -88,11 +109,28 @@ export default function Home() {
   );
 }
 
-function Output() {
+function Output({nameOutput, setNameOutput}) {
   return (
     <div className="flex flex-col items-center gap-8">
       <h2 className="text-2xl font-bold">Numerology Output</h2>
-      <p>Output will be displayed here.</p>
+      <div className='flex flex-col items-center gap-4'>
+        <div className='flex flex-row gap-4'>
+            {nameOutput.letterWithValue.map((item, index) => (
+              <div key={index}>
+                <OutputColumn index={index} letter={item.letter} value={item.value} />
+              </div>))}
+          </div>
+      </div>
+    </div>
+  )
+}
+
+function OutputColumn({index, letter, value}) {
+
+  return (
+    <div key={index} className="flex flex-col nowrap items-center gap-4">
+        <div><p>{letter}</p></div>
+        {letter =="a" || letter == "e" || letter == "i" || letter == "o" || letter == "u" ? <div className="text-blue-500">{value}</div> : <div className="text-red-500">{value}</div>}   
     </div>
   )
 }
