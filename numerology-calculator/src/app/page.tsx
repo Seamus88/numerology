@@ -90,18 +90,18 @@ export default function Home() {
         <div id="left-panel" className="flex flex-col  gap-8 p-8">
           <Directions/>
           <div className="flex flex-col items-center gap-4">
-            <BirthdayInput setNumerologyData={setNumerologyData}/>
+            <BirthdayInput numerologyData={numerologyData} setNumerologyData={setNumerologyData}/>
             <NameInput numerologyData={numerologyData} />
             <button onClick={() => handleNumerology()}>Calculate</button>
           </div>
         </div>
         <div id="right-panel" className="flex flex-col justify-center items-start gap-8">
-          <NumerologyOutput numerologyData={numerologyData} />
+          <RightColumnOutput numerologyData={numerologyData} />
         </div>
       </div>
       <div id="main-output" className="flex flex-row justify-center items-center gap-8">
         <div> 
-          {nameOutput.show == true? <Output nameOutput={nameOutput} setNameOutput={setNameOutput} /> : <div className="hidden"></div>}
+          {nameOutput.show == true? <Output numerologyData={numerologyData} nameOutput={nameOutput} setNameOutput={setNameOutput} /> : <div className="hidden"></div>}
         </div>
       </div>
     </div>
@@ -109,7 +109,7 @@ export default function Home() {
   );
 }
 
-function Output({nameOutput, setNameOutput}) {
+function Output({numerologyData, nameOutput, setNameOutput}) {
   return (
     <div className="flex flex-col items-center gap-8">
       <h2 className="text-2xl font-bold">Numerology Output</h2>
@@ -119,6 +119,11 @@ function Output({nameOutput, setNameOutput}) {
               <div key={index}>
                 <OutputColumn index={index} letter={item.letter} value={item.value} />
               </div>))}
+              <div className="flex flex-col justify-evenly gap-4">
+                <div className="text-blue-500">Soul Number={numerologyData.sn}</div>
+                <div>----------</div>
+                <div className="text-red-500">Outer Personality={numerologyData.op}</div>
+              </div>
           </div>
       </div>
     </div>
@@ -128,9 +133,10 @@ function Output({nameOutput, setNameOutput}) {
 function OutputColumn({index, letter, value}) {
 
   return (
-    <div key={index} className="flex flex-col nowrap items-center gap-4">
-        <div><p>{letter}</p></div>
-        {letter =="a" || letter == "e" || letter == "i" || letter == "o" || letter == "u" ? <div className="text-blue-500">{value}</div> : <div className="text-red-500">{value}</div>}   
+    <div key={index} className="flex flex-col justify-evenly gap-4">
+        {letter =="a" || letter == "e" || letter == "i" || letter == "o" || letter == "u" ? <div className="text-blue-500">+ {value}</div> : <div className="text-black">+ 0</div>}
+        <div><p className="text-end">{letter}</p></div>
+        {letter =="a" || letter == "e" || letter == "i" || letter == "o" || letter == "u" ? <div className="text-black">+ 0</div> : <div className="text-red-500">+ {value}</div>}
     </div>
   )
 }
@@ -149,7 +155,7 @@ function Directions() {
   )
 }
 
-function BirthdayInput({setNumerologyData} ) {
+function BirthdayInput({numerologyData, setNumerologyData} ) {
 
   function calculateLifeLesson(bday: string) {
     const bdayArray = bday.split("-");
@@ -159,8 +165,8 @@ function BirthdayInput({setNumerologyData} ) {
     console.log(yearSum);
     const month = parseInt(bdayArray[1]);
     const day = parseInt(bdayArray[2]);
-    setNumerologyData((prevState) => ({
-      ll: yearSum + month + day, op: prevState.op, sn: prevState.sn, pod: prevState.pod
+    setNumerologyData((numerologyData) => ({
+      ll: yearSum + month + day, op: numerologyData.op, sn: numerologyData.sn, pod: numerologyData.pod
     }))
   }
 
@@ -202,10 +208,21 @@ function NameInput({numerologyData} ) {
   );
 }
 
-function NumerologyOutput({numerologyData}) {
+function RightColumnOutput({numerologyData}) {
+  function baseNumber(num: number) {
+    let newNum = num;
+    if (newNum == 11 || newNum == 22 || newNum == 33) {
+      return newNum;
+    }
+    while (newNum > 9) {
+      newNum = newNum.toString().split("").reduce((acc, num) => acc + parseInt(num), 0);
+    }
+    return newNum;
+  }
+
     return (
       <div className="flex flex-col items-center gap-8">
-        {numerologyData.ll !== 0 ? <h2>Life Lesson: {numerologyData.ll}</h2> : <h2>Life Lesson: </h2>}
+        {numerologyData.ll !== 0 ? <h2>Life Lesson: {numerologyData.ll} {numerologyData.ll > 9 ? <>/ {baseNumber(numerologyData.ll)}</> : <div></div>}</h2> : <h2>Life Lesson: </h2>}
         {numerologyData.op !== 0 ? <h2>OuterPersonality: {numerologyData.op}</h2> : <h2>OuterPersonality: </h2>}
         {numerologyData.sn !== 0 ? <h2>Soul Number: {numerologyData.sn}</h2> : <h2>Soul Number: </h2>}
         {numerologyData.pod !== 0 ? <h2>Path Of Destiny: {numerologyData.pod}</h2> : <h2>Path Of Destiny: </h2>}
